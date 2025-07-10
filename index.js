@@ -23,22 +23,21 @@ app.post("/", async (req, res) => {
         "X-API-Key": apiKey,
       },
     });
-    const len=result2.data.results.length;
+    const len = result2.data.results.length;
     let sensorsIds = [];
-    for(var i=0;i<len;i++){
-        sensorsIds.push(result2.data.results[i].sensorsId);
+    for (var i = 0; i < len; i++) {
+      sensorsIds.push(result2.data.results[i].sensorsId);
     }
-    const sensorsData=[];
-    for(var i=0;i<len;i++){
-        const result3=await axios.get(`${URL}/sensors/${sensorsIds[i]}`,
-            {
-                headers:{
-                    "X-API-Key": apiKey,
-                }
-            }
-        );
-        sensorsData.push(result3.data.results[0]);
-    }
+    const sensorRequests = sensorsIds.map((id) =>
+      axios.get(`${URL}/sensors/${id}`, {
+        headers: { "X-API-Key": apiKey },
+      })
+    );
+
+    const results3 = await Promise.all(sensorRequests);
+
+    const sensorsData = results3.map((r) => r.data.results[0]);
+
     console.log(sensorsData);
 
     //console.log(result.data.results[0].sensors);
