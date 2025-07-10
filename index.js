@@ -1,8 +1,9 @@
 import express from "express";
 import axios from "axios";
+import dotenv from "dotenv";
+dotenv.config();
 const URL = "https://api.openaq.org/v3";
-const apiKey =
-  "386ad016cfc4952d99e4671b97cc059e30c3523c259dc695a7c37f8d805a5200";
+const apiKey =process.env.OPENAQ-API-KEY;
 const app = express();
 app.use(express.static("public"));
 app.post("/", async (req, res) => {
