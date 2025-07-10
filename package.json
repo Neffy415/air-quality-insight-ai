@@ -1,0 +1,19 @@
+{
+  "dependencies": {
+    "axios": "^1.10.0",
+    "dotenv": "^17.1.0",
+    "ejs": "^3.1.10",
+    "express": "^5.1.0"
+  },
+  "name": "apiproject",
+  "version": "1.0.0",
+  "description": "This is an AQI + health advisory app created as a hobby project.",
+  "main": "index.js",
+  "type": "module",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Amlan De",
+  "license": "ISC"
+}
