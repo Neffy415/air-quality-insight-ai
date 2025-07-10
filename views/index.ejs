@@ -3,29 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+    <title>Air Quality Monitor</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-<script>
-  const success=(position)=>{
-    const lat = position.coords.latitude;
-    const long= position.coords.longitude;
-    fetch(`/?lat=${lat}&long=${long}`,
-    {
-      method: "POST",
-      headers:{
-        "Content-Type": "application/json",
-      }
-    }
-  )
-  };
+    <div class="container">
+        <header>
+            <h1 class="main-title">Air Quality Monitor</h1>
+            <p class="subtitle">Real-time air quality data from your location</p>
+        </header>
 
-  const error=(Error)=>{
-    console.log(Error);
-  };
-  navigator.geolocation.getCurrentPosition(success,error);
-  
-</script>
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>Getting your location and fetching air quality data...</p>
+        </div>
 
+        <% if(locals.error) { %>
+            <div class="error-message">
+                <i class="fas fa-exclamation-triangle"></i>
+                <p><%= error %></p>
+            </div>
+        <% } %>
+
+        <div class="dashboard">
+            <% if(locals.Data && locals.location && Data.length > 0) { %>
+                <div class="location-info">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <h2>Location: <%= location %></h2>
+                </div>
+                <div class="sensor-grid">
+                    <% Data.forEach((data) => { %>
+                        <div class="sensor-card">
+                            <div class="sensor-header">
+                                <i class="fas fa-wind"></i>
+                                <h3><%= data.parameter.displayName %></h3>
+                            </div>
+                            <div class="sensor-value">
+                                <span class="value"><%= data.latest.value %></span>
+                                <span class="unit"><%= data.parameter.units %></span>
+                            </div>
+                            <div class="sensor-footer">
+                                <p class="sensor-name"><%= data.name %></p>
+                            </div>
+                        </div>
+                    <% }) %>
+                </div>
+                <div class="data-timestamp">
+                    <p>Last updated: <%= new Date().toLocaleString() %></p>
+                </div>
+            <% } else if (!locals.error) { %>
+                <div class="no-data">
+                    <i class="fas fa-search"></i>
+                    <p>No air quality data available for your location.</p>
+                    <p>Please try again or select a different location.</p>
+                </div>
+            <% } %>
+        </div>
+
+        <footer>
+            <p>Data provided by OpenAQ API</p>
+            <p>&copy; 2025 Air Quality Monitor</p>
+        </footer>
+    </div>
+
+    <script>
+        // Show loading indicator
+        document.getElementById('loading').classList.add('visible');
+        
+        const success=(position)=>{
+            const lat = position.coords.latitude;
+            const long= position.coords.longitude;
+            window.location.href = `/?lat=${lat}&long=${long}`;
+        };
+
+        const error=(Error)=>{
+            console.log(Error);
+            document.getElementById('loading').classList.remove('visible');
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i><p>Unable to get your location. Please allow location access and refresh the page.</p>';
+            document.querySelector('.container').appendChild(errorDiv);
+        };
+        
+        // Only get location if we don't have data yet
+        <% if(!locals.Data) { %>
+            navigator.geolocation.getCurrentPosition(success, error);
+        <% } else { %>
+            document.getElementById('loading').classList.remove('visible');
+        <% } %>
+    </script>
 </body>
 </html>
